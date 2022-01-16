@@ -74,26 +74,75 @@ contract MyEpicNFT is ERC721URIStorage {
         console.log("This is my NFT contract. Woah!");
     }
 
+    function pickRandomFirstWord(uint256 tokenId)
+        public
+        view
+        returns (string memory)
+    {
+        // I seed the random generator. More on this in the lesson.
+        uint256 rand = random(
+            string(abi.encodePacked("FIRST_WORD", Strings.toString(tokenId)))
+        );
+        // Squash the # between 0 and the length of the array to avoid going out of bounds.
+        rand = rand % firstWords.length;
+        return firstWords[rand];
+    }
+
+    function pickRandomSecondWord(uint256 tokenId)
+        public
+        view
+        returns (string memory)
+    {
+        uint256 rand = random(
+            string(abi.encodePacked("SECOND_WORD", Strings.toString(tokenId)))
+        );
+        rand = rand % secondWords.length;
+        return secondWords[rand];
+    }
+
+    function pickRandomThirdWord(uint256 tokenId)
+        public
+        view
+        returns (string memory)
+    {
+        uint256 rand = random(
+            string(abi.encodePacked("THIRD_WORD", Strings.toString(tokenId)))
+        );
+        rand = rand % thirdWords.length;
+        return thirdWords[rand];
+    }
+
+    function random(string memory input) internal pure returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(input)));
+    }
+
     // A function our user will hit to get their NFT.
     function makeAnEpicNFT() public {
         // Get the current tokenId, this starts at 0.
         uint256 newItemId = _tokenIds.current();
 
         // Actually mint the NFT to the sender using msg.sender.
-        _safeMint(msg.sender, newItemId);
+        string memory first = pickRandomFirstWord(newItemId);
+        string memory second = pickRandomSecondWord(newItemId);
+        string memory third = pickRandomThirdWord(newItemId);
 
-        // Set the NFTs data.
+        string memory finalSvg = string(
+            abi.encodePacked(baseSvg, first, second, third, "</text></svg>")
+        );
+        console.log("\n--------------------");
+        console.log(finalSvg);
+        console.log("--------------------\n");
         _setTokenURI(
             newItemId,
             "data:application/json;base64,eyJuYW1lIjoiVHVydGxlTmVja0dvZCIsImRlc2NyaXB0aW9uIjoiQW4gTkZUIGZyb20gdGhlIGhpZ2hseSBhY2NsYWltZWQgVHVydGxlIE5lY2sgR29kcyIsImltYWdlIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhCeVpYTmxjblpsUVhOd1pXTjBVbUYwYVc4OUluaE5hVzVaVFdsdUlHMWxaWFFpSUhacFpYZENiM2c5SWpBZ01DQXpOVEFnTXpVd0lqNEtJQ0FnSUR4emRIbHNaVDR1WW1GelpTQjdJR1pwYkd3NklIZG9hWFJsT3lCbWIyNTBMV1poYldsc2VUb2djMlZ5YVdZN0lHWnZiblF0YzJsNlpUb2dNVFJ3ZURzZ2ZUd3ZjM1I1YkdVK0NpQWdJQ0E4Y21WamRDQjNhV1IwYUQwaU1UQXdKU0lnYUdWcFoyaDBQU0l4TURBbElpQm1hV3hzUFNKaWJHRmpheUlnTHo0S0lDQWdJRHgwWlhoMElIZzlJalV3SlNJZ2VUMGlOVEFsSWlCamJHRnpjejBpWW1GelpTSWdaRzl0YVc1aGJuUXRZbUZ6Wld4cGJtVTlJbTFwWkdSc1pTSWdkR1Y0ZEMxaGJtTm9iM0k5SW0xcFpHUnNaU0krVkhWeWRHeGxUbVZqYTBkdlpEd3ZkR1Y0ZEQ0S1BDOXpkbWMrIn0="
         );
+
+        _tokenIds.increment();
         console.log(
             "An NFT w/ ID %s has been minted to %s",
             newItemId,
             msg.sender
         );
-
-        // Increment the counter for when the next NFT is minted.
-        _tokenIds.increment();
+        _safeMint(msg.sender, newItemId);
     }
 }
