@@ -12,6 +12,7 @@ contract MyEpicNFT is ERC721URIStorage {
     // Magic given to us by OpenZeppelin to help us keep track of tokenIds.
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    event NewEpicNFTMinted(address sender, uint256 tokenId);
     string[] colors = ["red", "#08C2A8", "black", "yellow", "blue", "green"];
     string svgPartOne =
         "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='";
@@ -183,5 +184,6 @@ contract MyEpicNFT is ERC721URIStorage {
             newItemId,
             msg.sender
         );
+        emit NewEpicNFTMinted(msg.sender, newItemId);
     }
 }
