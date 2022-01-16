@@ -6,9 +6,8 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
+import {Base64} from "./Base64.sol";
 
-// We inherit the contract we imported. This means we'll have access
-// to the inherited contract's methods.
 contract MyEpicNFT is ERC721URIStorage {
     // Magic given to us by OpenZeppelin to help us keep track of tokenIds.
     using Counters for Counters.Counter;
@@ -125,24 +124,45 @@ contract MyEpicNFT is ERC721URIStorage {
         string memory first = pickRandomFirstWord(newItemId);
         string memory second = pickRandomSecondWord(newItemId);
         string memory third = pickRandomThirdWord(newItemId);
+        string memory combinedWord = string(
+            abi.encodePacked(first, second, third)
+        );
 
         string memory finalSvg = string(
-            abi.encodePacked(baseSvg, first, second, third, "</text></svg>")
+            abi.encodePacked(baseSvg, combinedWord, "</text></svg>")
         );
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name": "',
+                        // We set the title of our NFT as the generated word.
+                        combinedWord,
+                        '", "description": "A highly acclaimed collection of squares.", "image": "data:image/svg+xml;base64,',
+                        // We add data:image/svg+xml;base64 and then append our base64 encode our svg.
+                        Base64.encode(bytes(finalSvg)),
+                        '"}'
+                    )
+                )
+            )
+        );
+
+        string memory finalTokenUri = string(
+            abi.encodePacked("data:application/json;base64,", json)
+        );
+
         console.log("\n--------------------");
         console.log(finalSvg);
         console.log("--------------------\n");
-        _setTokenURI(
-            newItemId,
-            "data:application/json;base64,eyJuYW1lIjoiVHVydGxlTmVja0dvZCIsImRlc2NyaXB0aW9uIjoiQW4gTkZUIGZyb20gdGhlIGhpZ2hseSBhY2NsYWltZWQgVHVydGxlIE5lY2sgR29kcyIsImltYWdlIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhCeVpYTmxjblpsUVhOd1pXTjBVbUYwYVc4OUluaE5hVzVaVFdsdUlHMWxaWFFpSUhacFpYZENiM2c5SWpBZ01DQXpOVEFnTXpVd0lqNEtJQ0FnSUR4emRIbHNaVDR1WW1GelpTQjdJR1pwYkd3NklIZG9hWFJsT3lCbWIyNTBMV1poYldsc2VUb2djMlZ5YVdZN0lHWnZiblF0YzJsNlpUb2dNVFJ3ZURzZ2ZUd3ZjM1I1YkdVK0NpQWdJQ0E4Y21WamRDQjNhV1IwYUQwaU1UQXdKU0lnYUdWcFoyaDBQU0l4TURBbElpQm1hV3hzUFNKaWJHRmpheUlnTHo0S0lDQWdJRHgwWlhoMElIZzlJalV3SlNJZ2VUMGlOVEFsSWlCamJHRnpjejBpWW1GelpTSWdaRzl0YVc1aGJuUXRZbUZ6Wld4cGJtVTlJbTFwWkdSc1pTSWdkR1Y0ZEMxaGJtTm9iM0k5SW0xcFpHUnNaU0krVkhWeWRHeGxUbVZqYTBkdlpEd3ZkR1Y0ZEQ0S1BDOXpkbWMrIn0="
-        );
 
+        _safeMint(msg.sender, newItemId);
+        _setTokenURI(newItemId, finalTokenUri);
         _tokenIds.increment();
+
         console.log(
             "An NFT w/ ID %s has been minted to %s",
             newItemId,
             msg.sender
         );
-        _safeMint(msg.sender, newItemId);
     }
 }
