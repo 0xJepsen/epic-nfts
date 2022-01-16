@@ -14,8 +14,63 @@ contract MyEpicNFT is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
+    string baseSvg =
+        "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='black' /><text x='50%' y='50%' class='base' dominant-baseline='middle' text-anchor='middle'>";
+
+    string[] firstWords = [
+        "Fancy",
+        "Humorous",
+        "Evil",
+        "Scandalous",
+        "Anonymous",
+        "Hot",
+        "Beautiful",
+        "Dull",
+        "Abstract",
+        "Fruitful",
+        "Convex",
+        "Optimal",
+        "Colorful",
+        "Eccentric",
+        "Righteous"
+    ];
+    string[] secondWords = [
+        "Sock",
+        "Turtle Neck",
+        "fork",
+        "Shoe",
+        "Snake",
+        "Coffee",
+        "Lasagna",
+        "Pancake",
+        "Oat",
+        "Vanilla",
+        "Cougar",
+        "Cat"
+        "Camel",
+        "Eagle",
+        "Cryptographer"
+    ];
+    string[] thirdWords = [
+        "Company",
+        "Factory",
+        "Overlord",
+        "Servent",
+        "Plebian",
+        "Simp",
+        "God",
+        "Mobile",
+        "Peasant",
+        "Man",
+        "Women",
+        "Servant",
+        "King",
+        "Celestial Body",
+        "Joke"
+    ];
+
     // We need to pass the name of our NFTs token and its symbol.
-    constructor() ERC721("SquareNFT", "SQUARE") {
+    constructor() ERC721("TurtleNeckNFT", "NECK") {
         console.log("This is my NFT contract. Woah!");
     }
 
