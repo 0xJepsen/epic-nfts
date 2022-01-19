@@ -1,3 +1,4 @@
+require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require('dotenv').config();
 module.exports = {
@@ -8,4 +9,7 @@ module.exports = {
       accounts: [process.env.RINKEBY_KEY],
     },
   },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API,
+  }
 };
